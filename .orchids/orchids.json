@@ -1,9 +1,0 @@
-{
-  "projectId": "9641170a-ee0b-4726-89c3-3c0ac572d4b9",
-  "createdAt": 1771412834679,
-  "version": "1.0",
-  "startupCommands": [
-    "cd D:\\Mydocs\\marjoballabani.me-master\\portfolio; bun install; bun run dev"
-  ],
-  "templateId": "any"
-}
