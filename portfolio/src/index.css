@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@theme {
+  --color-yellow: #ffd93d;
+  --color-cyan: #66d9ef;
+  --color-pink: #ff6b9d;
+  --color-green: #a8e6cf;
+  --color-purple: #c9b8ff;
+  --color-orange: #ffb347;
+
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+/* ── CSS custom props (theme-aware) ── */
+:root {
+  --bg: #ffffff;
+  --bg-secondary: #f8f7f4;
+  --bg-card: #ffffff;
+  --border: #000000;
+  --text: #111111;
+  --text-muted: #555555;
+  --shadow: 5px 5px 0 #000;
+  --shadow-lg: 8px 8px 0 #000;
+  --shadow-hover: 2px 2px 0 #000;
+  --radius: 8px;
+  --nav-height: 64px;
+}
+
+[data-theme='dark'] {
+  --bg: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-card: #1e1e1e;
+  --border: #ffffff;
+  --text: #f0f0f0;
+  --text-muted: #aaaaaa;
+  --shadow: 5px 5px 0 #fff;
+  --shadow-lg: 8px 8px 0 #fff;
+  --shadow-hover: 2px 2px 0 #fff;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+  line-height: 1.6;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: var(--font-sans); }
+img { max-width: 100%; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── Reusable utility classes (too complex/stateful for inline Tailwind) ── */
+.neo-card {
+  background: var(--bg-card);
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.neo-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translate(3px, 3px);
+}
+
+.section-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+  display: inline-block;
+  background: #ffd93d;
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 6px 20px;
+}
+[data-theme='dark'] .section-title { color: #000; }
+
+/* Loader animations */
+@keyframes pop-in {
+  to { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes fill-bar {
+  to { width: 100%; }
+}
+
+.loader-letter {
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+  animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+.loader-letter:nth-child(1) { animation-delay: 0.1s; }
+.loader-letter:nth-child(2) { animation-delay: 0.25s; }
+
+.loader-bar-fill {
+  height: 100%;
+  background: #000;
+  width: 0;
+  animation: fill-bar 0.9s ease-out 0.4s forwards;
+}
+
+/* Dark-mode colour overrides that can't live in Tailwind inline */
+[data-theme='dark'] .nav-brand-text { color: #000; }
+[data-theme='dark'] .nav-link:hover { color: #000; }
+[data-theme='dark'] .nav-cta-btn { background: #fff !important; color: #000 !important; }
+[data-theme='dark'] .hero-title-badge { color: #000; }
+[data-theme='dark'] .social-btn:hover { color: #000; }
+[data-theme='dark'] .tech-badge:hover { color: #000; }
+[data-theme='dark'] .highlight { color: #000; }
+[data-theme='dark'] .timeline-date { color: #000; }
+[data-theme='dark'] .skill-tag:hover { color: #000; }
+[data-theme='dark'] .skill-icon { color: #000; }
+[data-theme='dark'] .project-icon { color: #000; }
+[data-theme='dark'] .edu-year { color: #000; }
+[data-theme='dark'] .contact-card:hover { color: #000; }
+[data-theme='dark'] .mobile-link:hover { color: #000; }
+
+/* Lang bar fill transition */
+.lang-fill {
+  height: 100%;
+  background: #66d9ef;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
