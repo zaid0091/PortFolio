@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export default function ProjectModal({ project, onClose }) {
+export default function ProjectModal({ project, projectIdx, onClose }) {
   useEffect(() => {
     const onKey = e => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
@@ -21,49 +21,26 @@ export default function ProjectModal({ project, onClose }) {
         <div style={{ height: 5, background: project.iconBg, flexShrink: 0 }} />
 
         {/* Header */}
-        <div className="proj-modal-header" style={{ borderBottom: '3px solid var(--border)' }}>
-          <div
-            className="w-[48px] h-[48px] border-2 flex items-center justify-center text-[1.3rem] rounded-[8px] shrink-0"
-            style={{ background: project.iconBg, borderColor: 'var(--border)', color: '#000' }}
-          >
-            <i className={project.icon} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[1.2rem] font-bold" style={{ color: 'var(--text)' }}>{project.title}</div>
-            <div className="text-[0.8rem] font-mono" style={{ color: 'var(--text-muted)' }}>{project.date}</div>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="proj-modal-header">
+            <div className="proj-modal-icon" style={{ background: project.iconBg, viewTransitionName: `proj-icon-${projectIdx}` }}>
+              <i className={project.icon} />
+            </div>
+            <div className="proj-modal-info">
+              <div className="proj-modal-title" style={{ viewTransitionName: `proj-title-${projectIdx}` }}>{project.title}</div>
+              <div className="proj-modal-date">{project.date}</div>
+            </div>
+          <div className="proj-modal-links">
             {project.live && (
-              <a
-                href={project.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-[6px] text-[0.82rem] font-bold rounded-[6px] border-2 transition-[box-shadow,transform] duration-150 hover:translate-x-[2px] hover:translate-y-[2px]"
-                style={{ background: '#ffd93d', borderColor: 'var(--border)', color: '#000', boxShadow: 'var(--shadow)' }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; }}
-              >
+              <a href={project.live} target="_blank" rel="noopener noreferrer" className="proj-modal-btn proj-modal-btn--live">
                 <i className="fas fa-external-link-alt" /> Live
               </a>
             )}
             {project.github && (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-[6px] text-[0.82rem] font-bold rounded-[6px] border-2 transition-[box-shadow,transform] duration-150 hover:translate-x-[2px] hover:translate-y-[2px]"
-                style={{ background: '#000', borderColor: 'var(--border)', color: '#fff', boxShadow: 'var(--shadow)' }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; }}
-              >
+              <a href={project.github} target="_blank" rel="noopener noreferrer" className="proj-modal-btn proj-modal-btn--github">
                 <i className="fab fa-github" /> GitHub
               </a>
             )}
-            <button
-              onClick={onClose}
-              className="proj-modal-close"
-              aria-label="Close"
-            >
+            <button onClick={onClose} className="proj-modal-close" aria-label="Close">
               ✕
             </button>
           </div>
@@ -74,15 +51,9 @@ export default function ProjectModal({ project, onClose }) {
           <div className="proj-modal-content">
 
             {/* Tags */}
-            <div className="flex flex-wrap gap-[6px] mb-6">
+            <div className="proj-modal-tags">
               {project.tags.map(t => (
-                <span
-                  key={t}
-                  className="text-[0.75rem] px-[10px] py-[3px] border-2 rounded font-semibold font-mono"
-                  style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)', color: 'var(--text)' }}
-                >
-                  {t}
-                </span>
+                <span key={t} className="proj-modal-tag">{t}</span>
               ))}
             </div>
 

@@ -18,6 +18,7 @@ import Blog from './components/Blog'
 import HireMeBanner from './components/HireMeBanner'
 import SectionTint from './components/SectionTint'
 import SmoothScroll from './components/SmoothScroll'
+import SkeletonLoader from './components/SkeletonLoader'
 
 function HomePage() {
   return (
@@ -40,6 +41,7 @@ function App() {
   const [showTop, setShowTop] = useState(false)
   const [cmdOpen, setCmdOpen] = useState(false)
   const progressBarRef = useRef(null)
+  const isWiping = useRef(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('theme') || 'light'
@@ -75,21 +77,56 @@ function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const toggleTheme = () => {
+  const toggleTheme = (e) => {
     const next = theme === 'light' ? 'dark' : 'light'
-    setTheme(next)
-    localStorage.setItem('theme', next)
-    document.documentElement.setAttribute('data-theme', next)
+
+    // If View Transitions API not supported or already wiping, fall back instantly
+    if (!document.startViewTransition || isWiping.current) {
+      setTheme(next)
+      localStorage.setItem('theme', next)
+      document.documentElement.setAttribute('data-theme', next)
+      return
+    }
+
+    // Get click coordinates from the toggle button
+    const rect = e?.currentTarget?.getBoundingClientRect?.()
+    const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2
+    const y = rect ? rect.top + rect.height / 2 : 0
+
+    // Calculate the max radius needed to cover the entire viewport
+    const maxRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    )
+
+    // Set CSS custom properties for the animation origin
+    document.documentElement.style.setProperty('--wipe-x', `${x}px`)
+    document.documentElement.style.setProperty('--wipe-y', `${y}px`)
+    document.documentElement.style.setProperty('--wipe-radius', `${maxRadius}px`)
+
+    isWiping.current = true
+
+    const transition = document.startViewTransition(() => {
+      setTheme(next)
+      localStorage.setItem('theme', next)
+      document.documentElement.setAttribute('data-theme', next)
+    })
+
+    transition.finished.then(() => {
+      isWiping.current = false
+    })
   }
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
-  return (
-    <>
-          {/* Scroll progress bar */}
-          <div ref={progressBarRef} className="scroll-progress-bar" />
+    return (
+      <>
+            <SkeletonLoader visible={!loaded} />
 
-      <SmoothScroll />
+            {/* Scroll progress bar */}
+            <div ref={progressBarRef} className="scroll-progress-bar" />
+
+        <SmoothScroll />
       <SectionTint />
       <HireMeBanner />
       <CursorGlow />
@@ -113,7 +150,7 @@ function App() {
       </button>
 
         {/* Command Palette */}
-        <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
+        <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} onToggleTheme={toggleTheme} />
 
           {/* Konami Code Easter Egg */}
           <KonamiEgg />
