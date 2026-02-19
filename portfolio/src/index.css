@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* ── Typewriter cursor ── */
+.typewriter-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: 700;
+  animation: blink 0.75s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 /* ── Theme switch circle-wipe via View Transitions API ── */
 ::view-transition-old(root),
 ::view-transition-new(root) {
