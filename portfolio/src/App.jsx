@@ -50,7 +50,10 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoaded(true), 1400)
+    // If user prefers reduced motion, skip the loader entirely
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const delay = reducedMotion ? 0 : 1400
+    const timer = setTimeout(() => setLoaded(true), delay)
     return () => clearTimeout(timer)
   }, [])
 
@@ -68,11 +71,19 @@ function App() {
 
   useEffect(() => {
     const onKey = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault()
-        setCmdOpen(o => !o)
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault()
+          setCmdOpen(o => !o)
+          return
+        }
+        // '/' opens palette unless user is typing in an input/textarea
+        if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+          const tag = document.activeElement?.tagName
+          if (tag === 'INPUT' || tag === 'TEXTAREA') return
+          e.preventDefault()
+          setCmdOpen(true)
+        }
       }
-    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
@@ -80,8 +91,8 @@ function App() {
   const toggleTheme = (e) => {
     const next = theme === 'light' ? 'dark' : 'light'
 
-    // If View Transitions API not supported or already wiping, fall back instantly
-    if (!document.startViewTransition || isWiping.current) {
+    // If View Transitions API not supported, already wiping, or user prefers reduced motion → fall back instantly
+    if (!document.startViewTransition || isWiping.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setTheme(next)
       localStorage.setItem('theme', next)
       document.documentElement.setAttribute('data-theme', next)
@@ -117,7 +128,10 @@ function App() {
     })
   }
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  const scrollToTop = () => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.scrollTo({ top: 0, behavior: reducedMotion ? 'instant' : 'smooth' })
+  }
 
     return (
       <>

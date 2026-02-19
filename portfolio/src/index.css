@@ -93,8 +93,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Disable transition body background/color transition during wipe */
-::view-transition-old(root) body,
-::view-transition-new(root) body {
+[data-theme] body {
   transition: none !important;
 }
 
@@ -2574,5 +2573,416 @@ img {
   }
   .proj-modal-li {
     font-size: 0.85rem;
+  }
+}
+
+/* ── View Details pulse hint (fires once on first project card) ── */
+@keyframes view-details-pulse {
+  0%   { box-shadow: var(--shadow); transform: scale(1); }
+  40%  { box-shadow: 0 0 0 4px #66d9ef, var(--shadow); transform: scale(1.07); }
+  70%  { box-shadow: 0 0 0 2px #66d9ef, var(--shadow); transform: scale(0.97); }
+  100% { box-shadow: var(--shadow); transform: scale(1); }
+}
+
+.neo-card:first-child .view-details-badge {
+  animation: view-details-pulse 1.2s ease 0.8s 1 both;
+}
+
+/* ══════════════════════════════════════
+   Command Palette
+   ══════════════════════════════════════ */
+
+/* Overlay backdrop */
+.cmd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 80px 16px 16px;
+  animation: cmd-fade-in 0.15s ease both;
+}
+
+@keyframes cmd-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Dialog box */
+.cmd-dialog {
+  width: 100%;
+  max-width: 580px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: cmd-slide-in 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .cmd-overlay {
+    padding: 20px 12px 12px;
+    align-items: flex-start;
+  }
+  .cmd-dialog {
+    border-radius: 8px;
+  }
+  .cmd-header {
+    padding: 12px 12px;
+    gap: 8px;
+  }
+  .cmd-input {
+    font-size: 0.9rem;
+  }
+  .cmd-esc-badge {
+    font-size: 0.65rem;
+    padding: 2px 5px;
+  }
+  .cmd-list {
+    max-height: 260px;
+  }
+  .cmd-footer {
+    gap: 10px;
+    padding: 6px 12px;
+    flex-wrap: wrap;
+  }
+}
+
+@keyframes cmd-slide-in {
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* Header row */
+.cmd-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+.cmd-header-icon {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-cyan);
+  flex-shrink: 0;
+  letter-spacing: -0.05em;
+}
+
+.cmd-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text);
+  caret-color: var(--color-cyan);
+}
+
+.cmd-input::placeholder {
+  color: var(--text-muted);
+}
+
+.cmd-esc-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 3px 7px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Divider */
+.cmd-divider {
+  height: 2px;
+  background: var(--border);
+  opacity: 0.15;
+  margin: 0;
+}
+
+/* Results list */
+.cmd-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 8px;
+  max-height: 360px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.cmd-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+}
+
+/* Section label */
+.cmd-section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 8px 10px 4px;
+  font-family: var(--font-mono);
+}
+
+/* Individual item */
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  border: 2px solid transparent;
+}
+
+.cmd-item:hover,
+.cmd-item--active {
+  background: var(--bg-secondary);
+  border-color: var(--border);
+}
+
+.cmd-item-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.cmd-item-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cmd-item-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-recent-badge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1.5px solid var(--color-cyan);
+  border-radius: 4px;
+  color: var(--color-cyan);
+  flex-shrink: 0;
+}
+
+.cmd-item-enter {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.cmd-item--active .cmd-item-enter {
+  opacity: 1;
+}
+
+/* Footer hint bar */
+.cmd-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 2px solid var(--border);
+  border-top-color: color-mix(in srgb, var(--border) 15%, transparent);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  background: var(--bg-secondary);
+}
+
+.cmd-footer kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  background: var(--bg-card);
+  color: var(--text);
+  margin-right: 3px;
+}
+
+/* ══════════════════════════════════════
+   prefers-reduced-motion
+   Disables all decorative motion for users
+   who opt out via OS accessibility settings.
+   WCAG 2.1 AA — Success Criterion 2.3.3
+   ══════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  /* 1. Kill all CSS animations and transitions globally */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* 2. Scroll-reveal elements: show immediately, no fly-in */
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-zoom {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* 3. Timeline items: show immediately */
+  .timeline-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* 4. Loader letters: show instantly */
+  .loader-letter {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* 5. Loader bar: fill instantly */
+  .loader-bar-fill {
+    width: 100% !important;
+  }
+
+  /* 6. Skeleton shimmer: static background */
+  .skeleton-bone {
+    animation: none !important;
+    background: var(--bg-secondary) !important;
+  }
+
+  /* 7. Scroll-to-top: no slide-up animation */
+  .scroll-top-btn {
+    transition: none !important;
+  }
+
+  /* 8. Cursor glow: hide entirely */
+  .cursor-glow {
+    display: none !important;
+  }
+
+  /* 9. Nav slide-down: appear instantly */
+  .nav-animate {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* 10. Typewriter cursor blink: stop */
+  .typewriter-cursor {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* 11. OTW pulse dot: no pulse */
+  .otw-dot {
+    animation: none !important;
+  }
+
+  /* 12. Hire-me banner: no slide transition */
+  .hire-banner {
+    transition: none !important;
+  }
+
+  /* 13. Timeline vertical line: reveal instantly */
+  .timeline-line {
+    transition: none !important;
+    height: 100% !important;
+  }
+
+  /* 14. View transitions: instant swap, no circle wipe */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  /* 15. Blog / modal dialog fly-in */
+  .blog-modal-dialog,
+  .proj-modal-dialog,
+  .resume-modal-dialog,
+  .cmd-dialog {
+    animation: none !important;
+  }
+
+  /* 16. Modal overlays */
+  .blog-modal-overlay,
+  .proj-modal-overlay,
+  .resume-modal-overlay,
+  .cmd-overlay {
+    animation: none !important;
+  }
+
+  /* 17. Not-found bounce / spin */
+  .not-found-4,
+  .not-found-0 {
+    animation: none !important;
+  }
+
+  /* 18. AskMe panel spring */
+  .askme-panel {
+    transition: none !important;
+  }
+
+  /* 19. Hire-banner close dot */
+  .hire-banner-dot {
+    animation: none !important;
+  }
+
+  /* 20. Lang bar fill */
+  .lang-fill {
+    transition: none !important;
+  }
+
+  /* 21. View Details pulse badge */
+  .view-details-badge {
+    animation: none !important;
   }
 }

@@ -71,13 +71,16 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom */}
-        <div
-          className="mt-6 pt-5 text-center text-[0.82rem] opacity-50"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}
-        >
-          © {new Date().getFullYear()} Zaid Liaqat.
-        </div>
+          {/* Bottom */}
+          <div
+            className="mt-6 pt-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[0.82rem] opacity-50"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}
+          >
+            <span>© {new Date().getFullYear()} Zaid Liaqat.</span>
+            <span className="font-mono text-[0.76rem]">
+              Press <kbd style={{ padding: '1px 6px', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '4px', fontFamily: 'inherit' }}>/</kbd> to open command palette
+            </span>
+          </div>
       </div>
     </footer>
   );

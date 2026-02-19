@@ -240,12 +240,12 @@ export default function Projects() {
                         <i className="fas fa-external-link-alt" /> View Live
                       </a>
                     )}
-                    <span
-                      className="ml-auto text-[0.78rem] font-mono font-bold border-2 px-3 py-[4px] rounded"
-                      style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-muted)' }}
-                    >
-                      View Details →
-                    </span>
+                      <span
+                        className="view-details-badge ml-auto text-[0.78rem] font-mono font-bold border-2 px-3 py-[4px] rounded"
+                        style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-muted)' }}
+                      >
+                        View Details →
+                      </span>
                   </div>
                 </TiltCard>
               );
