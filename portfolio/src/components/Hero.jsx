@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import ResumeModal from './ResumeModal';
+import { useMagnet } from '../hooks/useMagnet';
 
 const ROLES = [
   'Full-Stack Engineer',
@@ -45,6 +46,11 @@ export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const [showResume, setShowResume] = useState(false);
   const role = useTypewriter(ROLES);
+
+  // Magnetic refs for CTA buttons
+  const magContactRef = useMagnet({ radius: 80, strength: 0.35 });
+  const magProjectsRef = useMagnet({ radius: 80, strength: 0.35 });
+  const magResumeRef = useMagnet({ radius: 80, strength: 0.35 });
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 100);
@@ -172,6 +178,7 @@ export default function Hero() {
               {/* Actions */}
               <div className={cls('reveal flex gap-3 flex-wrap', 'delay-4')}>
                 <a
+                  ref={magContactRef}
                   href="#contact"
                   className="btn-primary inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
                   style={{
@@ -186,6 +193,7 @@ export default function Hero() {
                   <i className="fas fa-paper-plane" /> Get In Touch
                 </a>
                 <a
+                  ref={magProjectsRef}
                   href="#projects"
                   className="inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] text-black rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
                   style={{
@@ -199,6 +207,7 @@ export default function Hero() {
                   <i className="fas fa-code" /> View Projects
                 </a>
                 <button
+                  ref={magResumeRef}
                   onClick={() => setShowResume(true)}
                   className="inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
                   style={{

@@ -15,6 +15,9 @@ import NotFound from './components/NotFound'
 import CommandPalette from './components/CommandPalette'
 import KonamiEgg from './components/KonamiEgg'
 import Blog from './components/Blog'
+import HireMeBanner from './components/HireMeBanner'
+import SectionTint from './components/SectionTint'
+import SmoothScroll from './components/SmoothScroll'
 
 function HomePage() {
   return (
@@ -83,16 +86,22 @@ function App() {
 
   return (
     <>
-        {/* Scroll progress bar */}
-        <div ref={progressBarRef} className="scroll-progress-bar" />
+          {/* Scroll progress bar */}
+          <div ref={progressBarRef} className="scroll-progress-bar" />
 
+      <SmoothScroll />
+      <SectionTint />
+      <HireMeBanner />
       <CursorGlow />
       <Loader hidden={loaded} />
-      <Navbar theme={theme} toggleTheme={toggleTheme} onCmdOpen={() => setCmdOpen(true)} />
-        <Routes>
-          <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+
+      <div id="smooth-root">
+        <Navbar theme={theme} toggleTheme={toggleTheme} onCmdOpen={() => setCmdOpen(true)} />
+          <Routes>
+            <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+      </div>
 
       {/* Scroll-to-top button */}
       <button
@@ -106,10 +115,10 @@ function App() {
         {/* Command Palette */}
         <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
 
-        {/* Konami Code Easter Egg */}
-        <KonamiEgg />
-      </>
-    )
+          {/* Konami Code Easter Egg */}
+          <KonamiEgg />
+        </>
+      )
 }
 
 export default App

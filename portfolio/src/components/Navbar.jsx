@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useMagnet } from '../hooks/useMagnet';
 
 export default function Navbar({ theme, toggleTheme }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState('');
+  const magBrandRef = useMagnet({ radius: 70, strength: 0.4 });
+  const magThemeRef = useMagnet({ radius: 60, strength: 0.45 });
 
   const links = [
     { href: '#about', label: 'About' },
@@ -41,9 +44,10 @@ export default function Navbar({ theme, toggleTheme }) {
         className="nav-animate fixed top-0 left-0 right-0 z-[1000] flex items-center"
       >
         <div className="max-w-[1100px] mx-auto px-6 flex items-center justify-between w-full">
-          {/* Brand */}
-          <a
-            href="#"
+            {/* Brand */}
+            <a
+              ref={magBrandRef}
+              href="#"
             className="nav-brand-text text-[1.4rem] font-bold font-mono px-[14px] py-1 border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
             style={{
               background: '#ffd93d',
@@ -87,8 +91,9 @@ export default function Navbar({ theme, toggleTheme }) {
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
+              <button
+                ref={magThemeRef}
+                onClick={toggleTheme}
               className="w-[38px] h-[38px] border-2 rounded flex items-center justify-center text-base transition-[box-shadow,transform] duration-150 hover:translate-x-[2px] hover:translate-y-[2px]"
               style={{
                 borderColor: 'var(--border)',
