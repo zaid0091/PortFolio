@@ -134,6 +134,9 @@ For a production mobile app with real-time features: **Firebase**.`,
 ]
 
 function BlogModal({ post, onClose }) {
+  const [readProgress, setReadProgress] = useState(0)
+  const bodyRef = useRef(null)
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -143,6 +146,19 @@ function BlogModal({ post, onClose }) {
       document.body.style.overflow = ''
     }
   }, [onClose])
+
+  useEffect(() => {
+    const el = bodyRef.current
+    if (!el) return
+    const onScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el
+      const max = scrollHeight - clientHeight
+      setReadProgress(max > 0 ? Math.min(scrollTop / max, 1) : 1)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
 
   // Simple markdown renderer (bold, code, headings, paragraphs)
   const renderContent = (md) => {
@@ -220,31 +236,52 @@ function BlogModal({ post, onClose }) {
     return blocks
   }
 
-  return (
-    <div className="blog-modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="blog-modal-dialog">
-        {/* Header */}
-        <div className="blog-modal-header" style={{ borderBottom: '3px solid var(--border)' }}>
-          <div style={{ flex: 1 }}>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {post.tags.map(t => (
-                <span key={t} className="blog-tag" style={{ background: post.color }}>{t}</span>
-              ))}
-            </div>
-            <h2 className="blog-modal-title">{post.title}</h2>
-            <span className="blog-modal-date">{post.date}</span>
+    return (
+      <div className="blog-modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+        <div className="blog-modal-dialog">
+          {/* Reading progress bar */}
+          <div className="blog-progress-track">
+            <div
+              className="blog-progress-fill"
+              style={{
+                width: `${readProgress * 100}%`,
+                background: post.color,
+              }}
+            />
           </div>
-          <button className="blog-modal-close" onClick={onClose} aria-label="Close">✕</button>
-        </div>
-        {/* Body */}
-        <div className="blog-modal-body">
-          <div className="blog-modal-content">
-            {renderFull(post.content)}
+          {/* Header */}
+          <div className="blog-modal-header">
+            <div className="blog-modal-header-content">
+              <div className="blog-modal-tags">
+                {post.tags.map(t => (
+                  <span key={t} className="blog-tag" style={{ background: post.color }}>{t}</span>
+                ))}
+              </div>
+              <h2 className="blog-modal-title">{post.title}</h2>
+              <div className="blog-modal-meta">
+                <span className="blog-modal-date">{post.date}</span>
+                <span
+                  className="blog-modal-progress-badge"
+                  style={{
+                    background: readProgress >= 1 ? '#a8e6cf' : 'var(--bg-secondary)',
+                    color: readProgress >= 1 ? '#1a6636' : 'var(--text-muted)',
+                  }}
+                >
+                  {Math.round(readProgress * 100)}%
+                </span>
+              </div>
+            </div>
+            <button className="blog-modal-close" onClick={onClose} aria-label="Close">✕</button>
+          </div>
+          {/* Body */}
+          <div className="blog-modal-body" ref={bodyRef}>
+            <div className="blog-modal-content">
+              {renderFull(post.content)}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
+    )
 }
 
 export default function Blog() {
