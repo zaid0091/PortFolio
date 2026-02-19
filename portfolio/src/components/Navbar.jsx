@@ -92,21 +92,26 @@ export default function Navbar({ theme, toggleTheme }) {
           {/* Right controls */}
           <div className="flex items-center gap-2">
               <button
-                ref={magThemeRef}
-                onClick={toggleTheme}
-              className="w-[38px] h-[38px] border-2 rounded flex items-center justify-center text-base transition-[box-shadow,transform] duration-150 hover:translate-x-[2px] hover:translate-y-[2px]"
-              style={{
-                borderColor: 'var(--border)',
-                background: 'var(--bg-card)',
-                boxShadow: '3px 3px 0 var(--border)',
-                color: 'var(--text)',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = '1px 1px 0 var(--border)'; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = '3px 3px 0 var(--border)'; }}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
+                  ref={magThemeRef}
+                  onClick={() => {
+                    const rect = magThemeRef.current.getBoundingClientRect()
+                    const x = rect.left + rect.width / 2
+                    const y = rect.top + rect.height / 2
+                    toggleTheme(x, y)
+                  }}
+                className="w-[38px] h-[38px] border-2 rounded flex items-center justify-center text-base transition-[box-shadow,transform] duration-150 hover:translate-x-[2px] hover:translate-y-[2px]"
+                style={{
+                  borderColor: 'var(--border)',
+                  background: 'var(--bg-card)',
+                  boxShadow: '3px 3px 0 var(--border)',
+                  color: 'var(--text)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = '1px 1px 0 var(--border)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = '3px 3px 0 var(--border)'; }}
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
 
             {/* Hamburger / Close */}
             <button

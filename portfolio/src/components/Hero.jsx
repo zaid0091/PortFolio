@@ -247,32 +247,31 @@ export default function Hero() {
             </div>
 
             {/* Right — avatar */}
-            <div className={cls('reveal-zoom relative w-[300px] shrink-0 hidden md:block', 'delay-3')}>
-              <div
-                className="hero-avatar-placeholder w-[300px] h-[300px] border-4 rounded-[8px] flex items-center justify-center text-[5rem] font-bold font-mono text-black transition-transform duration-300 hover:-rotate-2 cursor-default select-none"
-                style={{
-                  borderColor: 'var(--border)',
-                  boxShadow: 'var(--shadow-lg)',
-                  background: 'linear-gradient(135deg, #66d9ef, #a8e6cf)',
-                }}
-              >
-                ZL
-              </div>
+              <div className={cls('reveal-zoom relative w-[360px] shrink-0 hidden md:block', 'delay-3')}>
+                <img
+                  src="/image/my_picture.png"
+                  alt="Zaid Liaqat"
+                  className="hero-avatar-placeholder w-[360px] h-[380px] border-4 rounded-[8px] object-cover object-top transition-transform duration-300 hover:-rotate-2"
+                  style={{
+                    borderColor: 'var(--border)',
+                    boxShadow: 'var(--shadow-lg)',
+                  }}
+                />
 
-              {/* Deco tags */}
-              <span
-                className="absolute bottom-[-16px] right-[-16px] px-[14px] py-[6px] text-[0.85rem] font-bold rounded border-[3px] whitespace-nowrap"
-                style={{ background: '#ff6b9d', borderColor: 'var(--border)', boxShadow: 'var(--shadow)' }}
-              >
-                📍 Hasilpur, Pakistan
-              </span>
-              <span
-                className="absolute top-[-14px] left-[-14px] px-[14px] py-[6px] text-[0.8rem] font-bold rounded border-[3px] whitespace-nowrap font-mono"
-                style={{ background: '#a8e6cf', borderColor: 'var(--border)', boxShadow: 'var(--shadow)' }}
-              >
-                &lt;developer /&gt;
-              </span>
-            </div>
+                {/* Deco tags */}
+                <span
+                  className="absolute bottom-[-16px] right-[-16px] px-[14px] py-[6px] text-[0.85rem] font-bold rounded border-[3px] whitespace-nowrap"
+                  style={{ background: '#ff6b9d', borderColor: 'var(--border)', boxShadow: 'var(--shadow)' }}
+                >
+                   Hasilpur, Pakistan
+                </span>
+                <span
+                  className="absolute top-[-14px] left-[-14px] px-[14px] py-[6px] text-[0.8rem] font-bold rounded border-[3px] whitespace-nowrap font-mono"
+                  style={{ background: '#a8e6cf', borderColor: 'var(--border)', boxShadow: 'var(--shadow)' }}
+                >
+                  &lt;developer /&gt;
+                </span>
+              </div>
 
           </div>
         </div>
