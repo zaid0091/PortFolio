@@ -14,6 +14,7 @@ import CursorGlow from './components/CursorGlow'
 import NotFound from './components/NotFound'
 import CommandPalette from './components/CommandPalette'
 import KonamiEgg from './components/KonamiEgg'
+import Blog from './components/Blog'
 
 function HomePage() {
   return (
@@ -24,6 +25,7 @@ function HomePage() {
       <Skills />
       <Projects />
       <Education />
+      <Blog />
       <Contact />
     </>
   )

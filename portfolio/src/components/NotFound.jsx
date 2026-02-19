@@ -1,14 +1,87 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+
+const GLITCH_CHARS = '!<>-_\\/[]{}—=+*^?#@$%&'
+
+function GlitchText({ text }) {
+  const [display, setDisplay] = useState(text)
+
+  useEffect(() => {
+    let frame = 0
+    let interval
+
+    const start = () => {
+      let iterations = 0
+      interval = setInterval(() => {
+        setDisplay(
+          text
+            .split('')
+            .map((char, i) => {
+              if (i < iterations) return text[i]
+              return GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+            })
+            .join('')
+        )
+        iterations += 0.4
+        if (iterations >= text.length) {
+          clearInterval(interval)
+          setDisplay(text)
+          // restart after a pause
+          frame = setTimeout(start, 3000 + Math.random() * 2000)
+        }
+      }, 40)
+    }
+
+    frame = setTimeout(start, 800)
+    return () => {
+      clearInterval(interval)
+      clearTimeout(frame)
+    }
+  }, [text])
+
+  return <span>{display}</span>
+}
 
 export default function NotFound() {
+  const [scanline, setScanline] = useState(0)
+
+  // Animate scanline position
+  useEffect(() => {
+    const id = setInterval(() => {
+      setScanline(p => (p + 2) % 110)
+    }, 16)
+    return () => clearInterval(id)
+  }, [])
+
   return (
-    <section className="min-h-screen flex items-center justify-center px-6 py-20" style={{ background: 'var(--bg)' }}>
-      <div className="text-center max-w-lg">
-        {/* Big 404 */}
-        <div className="not-found-number">
-          <span className="not-found-4">4</span>
-          <span className="not-found-0">0</span>
-          <span className="not-found-4">4</span>
+    <section
+      className="min-h-screen flex items-center justify-center px-6 py-20"
+      style={{ background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}
+    >
+      {/* Scanline overlay */}
+      <div
+        aria-hidden
+        style={{
+          position: 'fixed',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 0,
+          background: `repeating-linear-gradient(
+            to bottom,
+            transparent,
+            transparent 3px,
+            rgba(0,0,0,0.03) 3px,
+            rgba(0,0,0,0.03) 4px
+          )`,
+        }}
+      />
+
+      <div className="text-center max-w-lg" style={{ position: 'relative', zIndex: 1 }}>
+        {/* Big 404 with glitch */}
+        <div className="not-found-number" style={{ position: 'relative' }}>
+          <span className="not-found-4 glitch-digit" data-text="4">4</span>
+          <span className="not-found-0 glitch-digit" data-text="0">0</span>
+          <span className="not-found-4 glitch-digit" data-text="4">4</span>
         </div>
 
         {/* Divider */}
@@ -28,7 +101,7 @@ export default function NotFound() {
           className="text-2xl font-bold mb-3"
           style={{ color: 'var(--text)', fontFamily: 'var(--font-sans)' }}
         >
-          Page not found
+          <GlitchText text="Page not found" />
         </h2>
         <p
           className="text-lg mb-8"
@@ -37,24 +110,32 @@ export default function NotFound() {
           Looks like this page got lost in the code.
           <br />
           Maybe it was{' '}
-          <span style={{ fontFamily: 'var(--font-mono)', background: '#ffd93d', padding: '2px 6px', border: '2px solid var(--border)', color: '#000' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              background: '#ffd93d',
+              padding: '2px 6px',
+              border: '2px solid var(--border)',
+              color: '#000',
+            }}
+          >
             undefined
           </span>{' '}
           all along.
         </p>
 
         {/* Back home button */}
-        <Link
-          to="/"
-          className="not-found-btn"
-        >
+        <Link to="/" className="not-found-btn">
           <i className="fas fa-arrow-left mr-2" />
-          Back to Home
+          Go Home
         </Link>
 
         {/* Fun code snippet */}
-        <div className="neo-card mt-10 p-5 text-left" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
-          <p style={{ color: 'var(--text-muted)' }}>// the page you're looking for</p>
+        <div
+          className="neo-card mt-10 p-5 text-left"
+          style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
+        >
+          <p style={{ color: 'var(--text-muted)' }}>// the page you&apos;re looking for</p>
           <p>
             <span style={{ color: '#ff6b9d' }}>const</span>{' '}
             <span style={{ color: '#66d9ef' }}>page</span> ={' '}
@@ -65,7 +146,7 @@ export default function NotFound() {
           </p>
           <p className="ml-4">
             <span style={{ color: '#66d9ef' }}>redirect</span>(
-            <span style={{ color: '#a8e6cf' }}>'/home'</span>);
+            <span style={{ color: '#a8e6cf' }}>&apos;/home&apos;</span>);
           </p>
           <p>{'}'}</p>
         </div>
