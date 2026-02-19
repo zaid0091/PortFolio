@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import Loader from './components/Loader'
+
 import Hero from './components/Hero'
 import About from './components/About'
 import Experience from './components/Experience'
@@ -18,7 +18,7 @@ import Blog from './components/Blog'
 import HireMeBanner from './components/HireMeBanner'
 import SectionTint from './components/SectionTint'
 import SmoothScroll from './components/SmoothScroll'
-import SkeletonLoader from './components/SkeletonLoader'
+
 
 function HomePage() {
   return (
@@ -37,7 +37,6 @@ function HomePage() {
 
 function App() {
   const [theme, setTheme] = useState('light')
-  const [loaded, setLoaded] = useState(false)
   const [showTop, setShowTop] = useState(false)
   const [cmdOpen, setCmdOpen] = useState(false)
   const progressBarRef = useRef(null)
@@ -46,15 +45,7 @@ function App() {
     const saved = localStorage.getItem('theme') || 'light'
     setTheme(saved)
     document.documentElement.setAttribute('data-theme', saved)
-  }, [])
-
-  useEffect(() => {
-    // If user prefers reduced motion, skip the loader entirely
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const delay = reducedMotion ? 0 : 1400
-    const timer = setTimeout(() => setLoaded(true), delay)
-    return () => clearTimeout(timer)
-  }, [])
+    }, [])
 
   useEffect(() => {
     const onScroll = () => {
@@ -133,18 +124,15 @@ function App() {
 
     return (
       <>
-            <SkeletonLoader visible={!loaded} />
-
-            {/* Scroll progress bar */}
+          {/* Scroll progress bar */}
             <div ref={progressBarRef} className="scroll-progress-bar" />
 
         <SmoothScroll />
       <SectionTint />
       <HireMeBanner />
-      <CursorGlow />
-      <Loader hidden={loaded} />
+    <CursorGlow />
 
-      <div id="smooth-root">
+    <div id="smooth-root">
         <Navbar theme={theme} toggleTheme={toggleTheme} onCmdOpen={() => setCmdOpen(true)} />
           <Routes>
             <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
