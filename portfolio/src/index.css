@@ -458,6 +458,39 @@ img {
   background: #66d9ef;
 }
 
+/* ── Resume Modal ── */
+.resume-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: cmd-overlay-in 0.15s ease forwards;
+}
+
+.resume-modal-dialog {
+  width: 100%;
+  max-width: 860px;
+  height: 90vh;
+  background: var(--bg-card);
+  border: 3px solid var(--border);
+  box-shadow: 10px 10px 0 var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: cmd-dialog-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.resume-modal-body {
+  flex: 1;
+  overflow: hidden;
+}
+
 /* ── Command Palette ── */
 .cmd-overlay {
   position: fixed;
