@@ -1,3 +1,5 @@
+import { useInView } from '../hooks/useInView';
+
 export default function Skills() {
   const groups = [
     {
@@ -38,6 +40,9 @@ export default function Skills() {
     },
   ];
 
+  const [titleRef, titleVisible] = useInView();
+  const [gridRef, gridVisible] = useInView({ threshold: 0.05 });
+
   return (
     <section
       id="skills"
@@ -45,11 +50,23 @@ export default function Skills() {
       style={{ background: 'var(--bg)' }}
     >
       <div className="max-w-[1100px] mx-auto px-6">
-        <h2 className="section-title">Skills</h2>
+        <h2
+          ref={titleRef}
+          className={`section-title reveal-zoom ${titleVisible ? 'is-visible' : ''}`}
+        >
+          Skills
+        </h2>
 
-        <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+        <div
+          ref={gridRef}
+          className="grid gap-6"
+          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
+        >
           {groups.map((g, i) => (
-            <div key={i} className="neo-card p-6">
+            <div
+              key={i}
+              className={`neo-card p-6 reveal ${gridVisible ? 'is-visible' : ''} delay-${i + 1}`}
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div
                   className="skill-icon w-11 h-11 border-2 flex items-center justify-center text-[1.2rem] rounded-[6px] shrink-0"
