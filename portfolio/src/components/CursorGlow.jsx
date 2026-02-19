@@ -7,6 +7,12 @@ export default function CursorGlow() {
     const glow = glowRef.current;
     if (!glow) return;
 
+    // Respect OS-level "reduce motion" preference — hide glow entirely
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      glow.style.display = 'none';
+      return;
+    }
+
     let x = -200, y = -200;
     let curX = -200, curY = -200;
     let raf;

@@ -13,10 +13,12 @@ const SOCIAL_CARDS = [
 ];
 
 export default function Contact() {
-  const formRef = useRef(null);
-  const [status, setStatus]   = useState('idle'); // idle | sending | success | error
-  const [focused, setFocused] = useState('');
-  const [copied, setCopied]   = useState(false);
+  const formRef    = useRef(null);
+  const botRef     = useRef(null);
+  const [status, setStatus]     = useState('idle'); // idle | sending | success | error
+  const [focused, setFocused]   = useState('');
+  const [copied, setCopied]     = useState(false);
+  const [charCount, setCharCount] = useState(0);
 
   function copyEmail() {
     navigator.clipboard.writeText('zaidliaqat999@gmail.com').then(() => {
@@ -30,6 +32,8 @@ export default function Contact() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    // Honeypot: bots fill hidden fields, humans don't
+    if (botRef.current?.value) return;
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
       setStatus('config');
       return;
@@ -37,9 +41,10 @@ export default function Contact() {
     setStatus('sending');
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY);
-      setStatus('success');
-      formRef.current.reset();
-      setTimeout(() => setStatus('idle'), 5000);
+        setStatus('success');
+        formRef.current.reset();
+        setCharCount(0);
+        setTimeout(() => setStatus('idle'), 5000);
     } catch {
       setStatus('error');
       setTimeout(() => setStatus('idle'), 4000);
@@ -95,7 +100,7 @@ export default function Contact() {
               I reply within 24 hours.
             </p>
 
-            <form ref={formRef} onSubmit={handleSubmit} noValidate>
+              <form ref={formRef} onSubmit={handleSubmit} noValidate style={{ position: 'relative' }}>
               <div className="flex flex-col gap-4">
                 {/* Name */}
                 <div>
@@ -144,21 +149,40 @@ export default function Contact() {
                   />
                 </div>
 
-                {/* Message */}
-                <div>
-                  <label className="block text-[0.82rem] font-bold mb-1 font-mono" style={{ color: 'var(--text-muted)' }}>
-                    MESSAGE *
-                  </label>
-                  <textarea
-                    name="message"
-                    required
-                    rows={5}
-                    placeholder="Tell me about your project or opportunity..."
-                    style={{ ...inputStyle('message'), resize: 'vertical', minHeight: '130px' }}
-                    onFocus={() => setFocused('message')}
-                    onBlur={() => setFocused('')}
+                  {/* Message */}
+                  <div>
+                    <label className="block text-[0.82rem] font-bold mb-1 font-mono" style={{ color: 'var(--text-muted)' }}>
+                      MESSAGE *
+                    </label>
+                    <textarea
+                      name="message"
+                      required
+                      maxLength={500}
+                      rows={5}
+                      placeholder="Tell me about your project or opportunity..."
+                      style={{ ...inputStyle('message'), resize: 'vertical', minHeight: '130px' }}
+                      onFocus={() => setFocused('message')}
+                      onBlur={() => setFocused('')}
+                      onChange={e => setCharCount(e.target.value.length)}
+                    />
+                    <p
+                      className="text-right text-[0.78rem] font-mono mt-1"
+                      style={{ color: charCount >= 480 ? '#e53e3e' : 'var(--text-muted)' }}
+                    >
+                      {charCount}/500
+                    </p>
+                  </div>
+
+                  {/* Honeypot — hidden from real users, bots fill it */}
+                  <input
+                    ref={botRef}
+                    name="bot_trap"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }}
                   />
-                </div>
 
                 {/* Submit */}
                 <button
