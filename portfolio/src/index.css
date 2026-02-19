@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* ── Theme switch circle-wipe via View Transitions API ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
 @theme {
   --color-yellow: #ffd93d;
   --color-cyan: #66d9ef;
@@ -67,35 +80,6 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display) !important;
 }
 
-/* ── Dark Mode Circle Wipe (View Transitions API) ── */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-::view-transition-old(root) {
-  z-index: 1;
-}
-
-::view-transition-new(root) {
-  z-index: 9999;
-  animation: circle-wipe-in 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes circle-wipe-in {
-  from {
-    clip-path: circle(0% at var(--wipe-x, 50%) var(--wipe-y, 0));
-  }
-  to {
-    clip-path: circle(var(--wipe-radius, 150vmax) at var(--wipe-x, 50%) var(--wipe-y, 0));
-  }
-}
-
-/* Disable transition body background/color transition during wipe */
-[data-theme] body {
-  transition: none !important;
-}
 
 /* ── Project Card → Modal View Transition Morphing ── */
 ::view-transition-group(proj-icon-0),

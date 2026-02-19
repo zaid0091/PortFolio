@@ -41,7 +41,6 @@ function App() {
   const [showTop, setShowTop] = useState(false)
   const [cmdOpen, setCmdOpen] = useState(false)
   const progressBarRef = useRef(null)
-  const isWiping = useRef(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('theme') || 'light'
@@ -88,45 +87,44 @@ function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const toggleTheme = (e) => {
-    const next = theme === 'light' ? 'dark' : 'light'
+    const toggleTheme = (x, y) => {
+      const next = theme === 'light' ? 'dark' : 'light'
 
-    // If View Transitions API not supported, already wiping, or user prefers reduced motion → fall back instantly
-    if (!document.startViewTransition || isWiping.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setTheme(next)
-      localStorage.setItem('theme', next)
-      document.documentElement.setAttribute('data-theme', next)
-      return
+      const originX = x ?? window.innerWidth - 40
+      const originY = y ?? 40
+
+      const maxR = Math.hypot(
+        Math.max(originX, window.innerWidth - originX),
+        Math.max(originY, window.innerHeight - originY)
+      )
+
+      const apply = () => {
+        setTheme(next)
+        localStorage.setItem('theme', next)
+        document.documentElement.setAttribute('data-theme', next)
+      }
+
+      if (!document.startViewTransition) {
+        apply()
+        return
+      }
+
+      const transition = document.startViewTransition(apply)
+
+      transition.ready.then(() => {
+        document.documentElement.animate(
+          [
+            { clipPath: `circle(0px at ${originX}px ${originY}px)` },
+            { clipPath: `circle(${maxR}px at ${originX}px ${originY}px)` },
+          ],
+          {
+            duration: 500,
+            easing: 'ease-in-out',
+            pseudoElement: '::view-transition-new(root)',
+          }
+        )
+      })
     }
-
-    // Get click coordinates from the toggle button
-    const rect = e?.currentTarget?.getBoundingClientRect?.()
-    const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2
-    const y = rect ? rect.top + rect.height / 2 : 0
-
-    // Calculate the max radius needed to cover the entire viewport
-    const maxRadius = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y)
-    )
-
-    // Set CSS custom properties for the animation origin
-    document.documentElement.style.setProperty('--wipe-x', `${x}px`)
-    document.documentElement.style.setProperty('--wipe-y', `${y}px`)
-    document.documentElement.style.setProperty('--wipe-radius', `${maxRadius}px`)
-
-    isWiping.current = true
-
-    const transition = document.startViewTransition(() => {
-      setTheme(next)
-      localStorage.setItem('theme', next)
-      document.documentElement.setAttribute('data-theme', next)
-    })
-
-    transition.finished.then(() => {
-      isWiping.current = false
-    })
-  }
 
   const scrollToTop = () => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
