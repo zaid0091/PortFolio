@@ -1,7 +1,57 @@
+import { useEffect, useState } from 'react';
+
+const ROLES = [
+  'Full-Stack Engineer',
+  'React Developer',
+  'Problem Solver',
+  'Backend Engineer',
+  'Open Source Enthusiast',
+];
+
+function useTypewriter(words, { typeSpeed = 130, deleteSpeed = 75, pause = 2400 } = {}) {
+  const [text, setText] = useState('');
+  const [wordIndex, setWordIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = words[wordIndex % words.length];
+    const delay = deleting
+      ? deleteSpeed
+      : text === current
+      ? pause
+      : typeSpeed;
+
+    const t = setTimeout(() => {
+      if (!deleting) {
+        setText(current.slice(0, text.length + 1));
+        if (text.length + 1 === current.length) setDeleting(true);
+      } else {
+        setText(current.slice(0, text.length - 1));
+        if (text.length - 1 === 0) {
+          setDeleting(false);
+          setWordIndex(i => i + 1);
+        }
+      }
+    }, delay);
+
+    return () => clearTimeout(t);
+  }, [text, deleting, wordIndex, words, typeSpeed, deleteSpeed, pause]);
+
+  return text;
+}
+
 export default function Hero() {
+  const [mounted, setMounted] = useState(false);
+  const role = useTypewriter(ROLES);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
   const socials = [
-{ icon: 'fab fa-github', href: 'https://github.com/zaid0091', label: 'GitHub' },
-      { icon: 'fab fa-linkedin', href: 'https://www.linkedin.com/in/zaid-liaqat-075b8b25b/', label: 'LinkedIn' },
+    { icon: 'fab fa-github', href: 'https://github.com/zaid0091', label: 'GitHub' },
+    { icon: 'fab fa-linkedin', href: 'https://www.linkedin.com/in/zaid-liaqat-075b8b25b/', label: 'LinkedIn' },
     { icon: 'fas fa-envelope', href: 'mailto:zaidliaqat999@gmail.com', label: 'Email' },
     { icon: 'fas fa-phone', href: 'tel:+923240281184', label: 'Phone' },
   ];
@@ -16,6 +66,9 @@ export default function Hero() {
     { icon: 'fab fa-git-alt', label: 'Git' },
     { icon: 'fas fa-fire', label: 'Firebase' },
   ];
+
+  const cls = (base, delay = '') =>
+    `${base} ${mounted ? 'is-visible' : ''} ${delay}`.trim();
 
   return (
     <section
@@ -41,14 +94,14 @@ export default function Hero() {
           {/* Left */}
           <div>
             <p
-              className="text-[1.1rem] font-mono mb-3"
+              className={cls('reveal text-[1.1rem] font-mono mb-3', 'delay-1')}
               style={{ color: 'var(--text-muted)' }}
             >
               👋 Hey, I&apos;m
             </p>
 
             <h1
-              className="font-bold leading-[1.1] tracking-[-0.03em] mb-5"
+              className={cls('reveal font-bold leading-[1.1] tracking-[-0.03em] mb-5', 'delay-2')}
               style={{
                 fontSize: 'clamp(2.4rem, 5vw, 3.8rem)',
                 color: 'var(--text)',
@@ -57,20 +110,30 @@ export default function Hero() {
               Zaid Liaqat
             </h1>
 
-            <span
-              className="hero-title-badge inline-block font-semibold text-base px-4 py-1 border-[3px] mb-5"
-              style={{
-                background: '#66d9ef',
-                borderColor: 'var(--border)',
-                boxShadow: 'var(--shadow)',
-              }}
-            >
-              Software Developer &amp; Full-Stack Engineer
-            </span>
+              <span
+                className={cls('reveal hero-title-badge inline-flex items-center font-semibold text-base px-4 py-1 border-[3px] mb-5 font-mono min-w-[260px]', 'delay-3')}
+                style={{
+                  background: '#66d9ef',
+                  borderColor: 'var(--border)',
+                  boxShadow: 'var(--shadow)',
+                }}
+              >
+                {role}
+                <span className="typewriter-cursor">|</span>
+              </span>
 
-            <p
-              className="text-[1.05rem] leading-[1.7] max-w-[540px] mb-7"
-              style={{ color: 'var(--text-muted)' }}
+              {/* Open to Work badge */}
+              <div className={cls('reveal flex items-center gap-2 mb-5', 'delay-3')}>
+                <span className="open-to-work-badge inline-flex items-center gap-[7px] px-3 py-[5px] rounded-full border-2 text-[0.82rem] font-bold font-mono"
+                  style={{ borderColor: 'var(--border)', background: '#d4f5e2', color: '#1a6636' }}>
+                  <span className="otw-dot" />
+                  Open to Work
+                </span>
+              </div>
+
+              <p
+                className={cls('reveal text-[1.05rem] leading-[1.7] max-w-[540px] mb-7', 'delay-3')}
+                style={{ color: 'var(--text-muted)' }}
             >
               BS Software Engineering student at IUB with hands-on experience building
               full-stack web apps, REST APIs, and real-time systems. Passionate about
@@ -78,7 +141,7 @@ export default function Hero() {
             </p>
 
             {/* Socials */}
-            <div className="flex gap-[10px] mb-7">
+            <div className={cls('reveal flex gap-[10px] mb-7', 'delay-4')}>
               {socials.map(s => (
                 <a
                   key={s.label}
@@ -108,7 +171,7 @@ export default function Hero() {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 flex-wrap">
+            <div className={cls('reveal flex gap-3 flex-wrap', 'delay-4')}>
               <a
                 href="#contact"
                 className="btn-primary inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
@@ -123,39 +186,39 @@ export default function Hero() {
               >
                 <i className="fas fa-paper-plane" /> Get In Touch
               </a>
-                <a
-                  href="#projects"
-                  className="inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] text-black rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
-                  style={{
-                    background: '#ffd93d',
-                    borderColor: 'var(--border)',
-                    boxShadow: 'var(--shadow)',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; }}
-                >
-                  <i className="fas fa-code" /> View Projects
-                </a>
-                  <a
-                    href="/Zaid_Liaqat_Resume.pdf"
-                    download="Zaid_Liaqat_Resume.pdf"
-                  className="inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
-                  style={{
-                    background: '#a8e6cf',
-                    color: '#000',
-                    borderColor: 'var(--border)',
-                    boxShadow: 'var(--shadow)',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; }}
-                >
-                  <i className="fas fa-download" /> Resume
-                </a>
+              <a
+                href="#projects"
+                className="inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] text-black rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
+                style={{
+                  background: '#ffd93d',
+                  borderColor: 'var(--border)',
+                  boxShadow: 'var(--shadow)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; }}
+              >
+                <i className="fas fa-code" /> View Projects
+              </a>
+              <a
+                href="/Zaid_Liaqat_Resume.pdf"
+                download="Zaid_Liaqat_Resume.pdf"
+                className="inline-flex items-center gap-2 px-6 py-3 font-bold text-[0.95rem] rounded-[6px] border-[3px] transition-[box-shadow,transform] duration-150 hover:translate-x-[3px] hover:translate-y-[3px]"
+                style={{
+                  background: '#a8e6cf',
+                  color: '#000',
+                  borderColor: 'var(--border)',
+                  boxShadow: 'var(--shadow)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; }}
+              >
+                <i className="fas fa-download" /> Resume
+              </a>
             </div>
 
             {/* Tech strip */}
             <div
-              className="flex gap-[10px] flex-wrap mt-12 pt-8 border-t-2 border-dashed"
+              className={cls('reveal flex gap-[10px] flex-wrap mt-12 pt-8 border-t-2 border-dashed', 'delay-5')}
               style={{ borderColor: 'var(--border)' }}
             >
               {techs.map(t => (
@@ -177,7 +240,7 @@ export default function Hero() {
           </div>
 
           {/* Right — avatar */}
-          <div className="relative w-[300px] shrink-0 hidden md:block">
+          <div className={cls('reveal-zoom relative w-[300px] shrink-0 hidden md:block', 'delay-3')}>
             <div
               className="hero-avatar-placeholder w-[300px] h-[300px] border-4 rounded-[8px] flex items-center justify-center text-[5rem] font-bold font-mono text-black transition-transform duration-300 hover:-rotate-2 cursor-default select-none"
               style={{

@@ -1,3 +1,23 @@
+import { useInView } from '../hooks/useInView';
+import { useEffect, useRef } from 'react';
+import VanillaTilt from 'vanilla-tilt';
+
+function TiltCard({ children, className }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    VanillaTilt.init(ref.current, {
+      max: 8,
+      speed: 400,
+      glare: true,
+      'max-glare': 0.12,
+      scale: 1.03,
+    });
+    return () => ref.current?.vanillaTilt?.destroy();
+  }, []);
+  return <div ref={ref} className={className}>{children}</div>;
+}
+
 export default function Projects() {
   const projects = [
     {
@@ -11,12 +31,12 @@ export default function Projects() {
         'React frontend with live WPM/accuracy counters; deployed frontend on Vercel.',
         'Serverless backend on AWS Lambda + SQLite; CI/CD via GitHub Actions.',
       ],
-        tags: ['React', 'Django', 'DRF', 'SQLite', 'AWS Lambda', 'Vercel', 'JWT'],
-          github: 'https://github.com/zaid0091/master-typing',
-        live: null,
-      },
-      {
-        icon: 'fas fa-map-marker-alt',
+      tags: ['React', 'Django', 'DRF', 'SQLite', 'AWS Lambda', 'Vercel', 'JWT'],
+      github: 'https://github.com/zaid0091/master-typing',
+      live: null,
+    },
+    {
+      icon: 'fas fa-map-marker-alt',
       iconBg: '#ff6b9d',
       title: 'Real-Time Vehicle Tracking',
       date: 'Jan 2024',
@@ -27,10 +47,13 @@ export default function Projects() {
         'Firebase Realtime Database for storing location history; Node/Express backend.',
       ],
       tags: ['Node.js', 'React', 'Socket.IO', 'Google Maps API', 'Firebase', 'Express'],
-        github: 'https://github.com/zaid0091',
+      github: 'https://github.com/zaid0091',
       live: null,
     },
   ];
+
+  const [titleRef, titleVisible] = useInView();
+  const [gridRef, gridVisible] = useInView({ threshold: 0.05 });
 
   return (
     <section
@@ -39,11 +62,19 @@ export default function Projects() {
       style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border)' }}
     >
       <div className="max-w-[1100px] mx-auto px-6">
-        <h2 className="section-title">Projects</h2>
+        <h2
+          ref={titleRef}
+          className={`section-title reveal-zoom ${titleVisible ? 'is-visible' : ''}`}
+        >
+          Projects
+        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-7">
           {projects.map((p, i) => (
-            <div key={i} className="neo-card p-7">
+            <TiltCard
+              key={i}
+              className={`neo-card p-7 ${i % 2 === 0 ? 'reveal-left' : 'reveal-right'} ${gridVisible ? 'is-visible' : ''} delay-${i + 1}`}
+            >
               {/* Top */}
               <div className="flex items-start gap-4 mb-[14px]">
                 <div
@@ -123,7 +154,7 @@ export default function Projects() {
                   </a>
                 )}
               </div>
-            </div>
+            </TiltCard>
           ))}
         </div>
       </div>
