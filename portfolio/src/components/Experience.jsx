@@ -101,7 +101,7 @@ export default function Experience() {
       title: 'Software Developer Intern',
       company: 'CodeWithCurious Tech Solutions',
       date: 'Jun 2023 – Dec 2023',
-      location: 'Pune, India (Remote)',
+      location: 'Bhawalpur, Pakistan (Remote)',
       bullets: [
         'Built and maintained full-stack web applications using Django, Django REST Framework, and React.',
         'Designed RESTful APIs consumed by React front-ends; wrote unit tests with pytest.',
