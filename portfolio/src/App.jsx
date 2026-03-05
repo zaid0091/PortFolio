@@ -18,6 +18,7 @@ import Blog from './components/Blog'
 import HireMeBanner from './components/HireMeBanner'
 import SectionTint from './components/SectionTint'
 import SmoothScroll from './components/SmoothScroll'
+import AskMeChat from './components/AskMeChat'
 
 
 function HomePage() {
@@ -152,10 +153,13 @@ function App() {
         {/* Command Palette */}
         <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} onToggleTheme={toggleTheme} />
 
-          {/* Konami Code Easter Egg */}
-          <KonamiEgg />
-        </>
-      )
+        {/* Konami Code Easter Egg */}
+        <KonamiEgg />
+
+        {/* AI Chat Widget */}
+        <AskMeChat />
+      </>
+    )
 }
 
 export default App
