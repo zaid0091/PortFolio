@@ -2847,6 +2847,443 @@ img {
 }
 
 /* ══════════════════════════════════════
+   AskMe AI Chat Widget
+   ══════════════════════════════════════ */
+
+/* ── Floating Action Button ── */
+.askme-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.askme-fab:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.askme-fab:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 var(--border);
+}
+
+.askme-fab-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+/* ── Chat Panel ── */
+.askme-panel {
+  position: fixed;
+  bottom: 88px;
+  right: 28px;
+  z-index: 8999;
+  width: 360px;
+  max-width: calc(100vw - 40px);
+  height: 520px;
+  max-height: calc(100dvh - 120px);
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Hidden state */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px) scale(0.97);
+  transform-origin: bottom right;
+  transition: opacity 0.2s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.askme-panel--open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* ── Header ── */
+.askme-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.askme-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.askme-avatar {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.askme-online-dot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 10px;
+  height: 10px;
+  background: #48bb78;
+  border: 2px solid var(--bg-card);
+  border-radius: 50%;
+}
+
+.askme-header-title {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.askme-header-sub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.askme-close-btn {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: background 0.1s ease, color 0.1s ease;
+  flex-shrink: 0;
+}
+
+.askme-close-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text);
+}
+
+/* ── Messages area ── */
+.askme-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+}
+
+.askme-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.askme-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.askme-messages::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  opacity: 0.4;
+}
+
+/* ── Individual message rows ── */
+.askme-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.askme-msg--user {
+  flex-direction: row-reverse;
+}
+
+.askme-msg-avatar {
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.askme-msg-bubble {
+  max-width: 78%;
+  padding: 9px 12px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg-card);
+  word-break: break-word;
+  position: relative;
+}
+
+.askme-msg--user .askme-msg-bubble {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+.askme-msg-bubble--streaming {
+  border-style: dashed;
+}
+
+/* ── Typing indicator dots ── */
+.askme-typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+}
+
+.askme-typing-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: askme-dot-bounce 1.2s ease-in-out infinite both;
+}
+
+.askme-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.askme-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes askme-dot-bounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40%           { transform: scale(1);   opacity: 1;   }
+}
+
+/* ── Streaming cursor ── */
+.askme-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--text);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: askme-cursor-blink 0.7s step-end infinite;
+}
+
+@keyframes askme-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Inline markdown content ── */
+.askme-content p {
+  margin: 0 0 4px;
+}
+
+.askme-content p:last-child {
+  margin-bottom: 0;
+}
+
+.askme-content code {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.askme-msg--user .askme-content code {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.askme-spacer {
+  height: 4px;
+}
+
+.askme-bullet {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin-bottom: 3px;
+}
+
+.askme-bullet-dot {
+  color: var(--color-cyan);
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 0.75em;
+}
+
+/* ── Suggestion chips ── */
+.askme-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px 0;
+  flex-shrink: 0;
+}
+
+.askme-suggestion-chip {
+  padding: 5px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.1s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.askme-suggestion-chip:hover {
+  background: var(--bg-card);
+  transform: translateY(-1px);
+}
+
+.askme-suggestion-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Input row ── */
+.askme-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 2px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.askme-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.askme-input::placeholder {
+  color: var(--text-muted);
+}
+
+.askme-input:focus {
+  border-color: var(--color-cyan);
+}
+
+.askme-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.askme-send-btn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.askme-send-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--border);
+}
+
+.askme-send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .askme-fab {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 14px;
+  }
+
+  .askme-panel {
+    bottom: 74px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+    height: 460px;
+  }
+}
+
+/* Visually hidden helper for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ══════════════════════════════════════
    prefers-reduced-motion
    Disables all decorative motion for users
    who opt out via OS accessibility settings.
