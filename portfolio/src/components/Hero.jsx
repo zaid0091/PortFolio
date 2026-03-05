@@ -10,7 +10,7 @@ const ROLES = [
   'Open Source Enthusiast',
 ];
 
-function useTypewriter(words, { typeSpeed = 130, deleteSpeed = 75, pause = 2400 } = {}) {
+function useTypewriter(words, { typeSpeed = 100, deleteSpeed = 75, pause = 2400 } = {}) {
   const [text, setText] = useState('');
   const [wordIndex, setWordIndex] = useState(0);
   const [deleting, setDeleting] = useState(false);
