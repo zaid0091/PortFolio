@@ -54,6 +54,11 @@ VITE_EMAILJS_PUBLIC_KEY=your_key
    npm run build
    ```
 
+## 🌐 Deployment
+
+This project includes a `vercel.json` file configured for **Single Page Application (SPA)** routing. This ensures that direct navigation to routes like `/admin` or `/blog` works correctly without 404 errors.
+
+
 ## 🏗️ Admin Panel
 
 The admin panel is accessible at `/admin`. It allows you to:
