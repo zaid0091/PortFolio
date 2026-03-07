@@ -6,24 +6,37 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+debug.log
 
+# Dependencies
 node_modules
+bun.lock
+package-lock.json
+
+# Build & Output
 dist
 dist-ssr
 *.local
 
+# Secrets & Environment
 .env
 .env.local
 .env.*.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+# Editor & IDE
+.vscode
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+.DS_Store
+
+# ESLint output & cache
+eslint_output.txt
+blog_eslint.json
+eslint.json
 
