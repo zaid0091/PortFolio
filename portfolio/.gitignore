@@ -18,6 +18,10 @@ dist
 dist-ssr
 *.local
 
+.env
+.env.local
+.env.*.local
+
 # Secrets & Environment
 .env
 .env.local
