@@ -20,7 +20,10 @@ import SectionTint from './components/SectionTint'
 import SmoothScroll from './components/SmoothScroll'
 import AskMeChat from './components/AskMeChat'
 
-
+import Login from './components/admin/Login'
+import AdminLayout from './components/admin/AdminLayout'
+import ManageProjects from './components/admin/ManageProjects'
+import ManageBlogs from './components/admin/ManageBlogs'
 function HomePage() {
   return (
     <>
@@ -46,99 +49,104 @@ function App() {
     const saved = localStorage.getItem('theme') || 'light'
     setTheme(saved)
     document.documentElement.setAttribute('data-theme', saved)
-    }, [])
+  }, [])
 
   useEffect(() => {
     const onScroll = () => {
-        const scrolled = window.scrollY
-        const total = document.documentElement.scrollHeight - window.innerHeight
-        const pct = total > 0 ? (scrolled / total) * 100 : 0
-        if (progressBarRef.current) progressBarRef.current.style.width = `${pct}%`
-        setShowTop(scrolled > 400)
-      }
+      const scrolled = window.scrollY
+      const total = document.documentElement.scrollHeight - window.innerHeight
+      const pct = total > 0 ? (scrolled / total) * 100 : 0
+      if (progressBarRef.current) progressBarRef.current.style.width = `${pct}%`
+      setShowTop(scrolled > 400)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   useEffect(() => {
     const onKey = (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-          e.preventDefault()
-          setCmdOpen(o => !o)
-          return
-        }
-        // '/' opens palette unless user is typing in an input/textarea
-        if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
-          const tag = document.activeElement?.tagName
-          if (tag === 'INPUT' || tag === 'TEXTAREA') return
-          e.preventDefault()
-          setCmdOpen(true)
-        }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setCmdOpen(o => !o)
+        return
       }
+      // '/' opens palette unless user is typing in an input/textarea
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+        const tag = document.activeElement?.tagName
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return
+        e.preventDefault()
+        setCmdOpen(true)
+      }
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-    const toggleTheme = (x, y) => {
-      const next = theme === 'light' ? 'dark' : 'light'
+  const toggleTheme = (x, y) => {
+    const next = theme === 'light' ? 'dark' : 'light'
 
-      const originX = x ?? window.innerWidth - 40
-      const originY = y ?? 40
+    const originX = x ?? window.innerWidth - 40
+    const originY = y ?? 40
 
-      const maxR = Math.hypot(
-        Math.max(originX, window.innerWidth - originX),
-        Math.max(originY, window.innerHeight - originY)
-      )
+    const maxR = Math.hypot(
+      Math.max(originX, window.innerWidth - originX),
+      Math.max(originY, window.innerHeight - originY)
+    )
 
-      const apply = () => {
-        setTheme(next)
-        localStorage.setItem('theme', next)
-        document.documentElement.setAttribute('data-theme', next)
-      }
-
-      if (!document.startViewTransition) {
-        apply()
-        return
-      }
-
-      const transition = document.startViewTransition(apply)
-
-      transition.ready.then(() => {
-        document.documentElement.animate(
-          [
-            { clipPath: `circle(0px at ${originX}px ${originY}px)` },
-            { clipPath: `circle(${maxR}px at ${originX}px ${originY}px)` },
-          ],
-          {
-            duration: 500,
-            easing: 'ease-in-out',
-            pseudoElement: '::view-transition-new(root)',
-          }
-        )
-      })
+    const apply = () => {
+      setTheme(next)
+      localStorage.setItem('theme', next)
+      document.documentElement.setAttribute('data-theme', next)
     }
+
+    if (!document.startViewTransition) {
+      apply()
+      return
+    }
+
+    const transition = document.startViewTransition(apply)
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        [
+          { clipPath: `circle(0px at ${originX}px ${originY}px)` },
+          { clipPath: `circle(${maxR}px at ${originX}px ${originY}px)` },
+        ],
+        {
+          duration: 500,
+          easing: 'ease-in-out',
+          pseudoElement: '::view-transition-new(root)',
+        }
+      )
+    })
+  }
 
   const scrollToTop = () => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     window.scrollTo({ top: 0, behavior: reducedMotion ? 'instant' : 'smooth' })
   }
 
-    return (
-      <>
-          {/* Scroll progress bar */}
-            <div ref={progressBarRef} className="scroll-progress-bar" />
+  return (
+    <>
+      {/* Scroll progress bar */}
+      <div ref={progressBarRef} className="scroll-progress-bar" />
 
-        <SmoothScroll />
+      <SmoothScroll />
       <SectionTint />
       <HireMeBanner />
-    <CursorGlow />
+      <CursorGlow />
 
-    <div id="smooth-root">
+      <div id="smooth-root">
         <Navbar theme={theme} toggleTheme={toggleTheme} onCmdOpen={() => setCmdOpen(true)} />
-          <Routes>
-            <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <Routes>
+          <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<ManageProjects />} />
+            <Route path="blogs" element={<ManageBlogs />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </div>
 
       {/* Scroll-to-top button */}
@@ -150,16 +158,16 @@ function App() {
         ↑
       </button>
 
-        {/* Command Palette */}
-        <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} onToggleTheme={toggleTheme} />
+      {/* Command Palette */}
+      <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} onToggleTheme={toggleTheme} />
 
-        {/* Konami Code Easter Egg */}
-        <KonamiEgg />
+      {/* Konami Code Easter Egg */}
+      <KonamiEgg />
 
-        {/* AI Chat Widget */}
-        <AskMeChat />
-      </>
-    )
+      {/* AI Chat Widget */}
+      <AskMeChat />
+    </>
+  )
 }
 
 export default App
