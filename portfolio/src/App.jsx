@@ -15,7 +15,7 @@ import NotFound from './components/NotFound'
 import CommandPalette from './components/CommandPalette'
 import KonamiEgg from './components/KonamiEgg'
 import Blog from './components/Blog'
-import HireMeBanner from './components/HireMeBanner'
+// import HireMeBanner from './components/HireMeBanner'
 import SectionTint from './components/SectionTint'
 import SmoothScroll from './components/SmoothScroll'
 import AskMeChat from './components/AskMeChat'
@@ -133,7 +133,6 @@ function App() {
 
       <SmoothScroll />
       <SectionTint />
-      <HireMeBanner />
       <CursorGlow />
 
       <div id="smooth-root">
