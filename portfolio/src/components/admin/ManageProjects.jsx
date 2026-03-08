@@ -4,6 +4,11 @@ import { Plus, Edit2, Trash2 } from 'lucide-react';
 
 const ensureAbsoluteUrl = (url) => {
     if (!url) return url;
+    // Handle protocol-relative URLs (//example.com)
+    if (url.startsWith('//')) {
+        return `https:${url}`;
+    }
+    // Add https:// to relative URLs
     if (!/^https?:\/\//i.test(url)) {
         return `https://${url}`;
     }
@@ -94,7 +99,14 @@ export default function ManageProjects() {
 
         try {
             // Parse arrays with safety guards
-            const getArray = (str) => (str || '').split('\n').map(s => s.trim()).filter(Boolean);
+            const getArray = (str) => {
+                const items = (str || '').split('\n').map(s => s.trim()).filter(Boolean);
+                const original = (str || '').split('\n').length;
+                if (items.length < original) {
+                    console.warn(`Warning: ${original - items.length} empty lines were removed from array field`);
+                }
+                return items;
+            };
             const getTags = (str) => (str || '').split(',').map(s => s.trim()).filter(Boolean);
 
             const formattedData = {

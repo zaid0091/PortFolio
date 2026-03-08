@@ -132,6 +132,7 @@ export async function* streamChatResponse(conversationHistory, userMessage) {
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
+    let hasContent = false;
 
     try {
         while (true) {
@@ -144,17 +145,24 @@ export async function* streamChatResponse(conversationHistory, userMessage) {
             for (const line of lines) {
                 if (!line.startsWith('data: ')) continue;
                 const data = line.slice(6).trim();
-                if (data === '[DONE]') return;
+                if (data === '[DONE]') {
+                    if (!hasContent) throw new Error('Received empty response from AI.');
+                    return;
+                }
 
                 try {
                     const parsed = JSON.parse(data);
                     const text = parsed.choices?.[0]?.delta?.content;
-                    if (text) yield text;
+                    if (text) {
+                        hasContent = true;
+                        yield text;
+                    }
                 } catch {
                     // Malformed SSE chunk — skip silently, don't crash the stream
                 }
             }
         }
+        if (!hasContent) throw new Error('Received empty response from AI.');
     } finally {
         reader.releaseLock();
     }

@@ -124,8 +124,8 @@ export default function AskMeChat() {
 
       setIsStreaming(true);
 
-      // History for API (exclude welcome message, only real turns)
-      const history = conversationRef.current;
+      // Snapshot history at this exact moment to prevent race conditions
+      const history = [...conversationRef.current];
 
       try {
         let accumulated = '';

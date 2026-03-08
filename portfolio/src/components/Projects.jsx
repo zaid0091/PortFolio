@@ -24,6 +24,11 @@ import { supabase } from '../services/supabaseClient';
 
 const ensureAbsoluteUrl = (url) => {
   if (!url) return url;
+  // Handle protocol-relative URLs (//example.com)
+  if (url.startsWith('//')) {
+    return `https:${url}`;
+  }
+  // Add https:// to relative URLs
   if (!/^https?:\/\//i.test(url)) {
     return `https://${url}`;
   }
@@ -68,11 +73,17 @@ export default function Projects() {
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchProjects() {
-      const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-      if (!error) {
+      try {
+        const { data, fetchError } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+        if (fetchError) {
+          setError(fetchError.message || 'Failed to load projects');
+          setLoading(false);
+          return;
+        }
         // Map database fields to the structure expected by the component
         const formattedProjects = data.map(p => ({
           ...p,
@@ -90,8 +101,12 @@ export default function Projects() {
           }
         }));
         setProjects(formattedProjects);
+        setError(null);
+      } catch (err) {
+        setError(err.message || 'An error occurred while loading projects');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchProjects();
   }, []);

@@ -31,11 +31,11 @@ export default function Navbar({ theme, toggleTheme }) {
         { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
       );
       observer.observe(el);
-      observers.push(observer);
+      observers.push({ id, observer });
     });
 
-    return () => observers.forEach(o => o.disconnect());
-  }, []);
+    return () => observers.forEach(({ observer }) => observer.disconnect());
+  }, [links]);
 
   return (
     <>

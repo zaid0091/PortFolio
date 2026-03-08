@@ -127,7 +127,7 @@ export default function CommandPalette({ open, onClose, onToggleTheme }) {
 
   // Determine where recents end for section divider
   const recentCount = (filtered === null)
-    ? recents.filter(id => COMMANDS.find(c => c.id === id)).length
+    ? recents.filter(id => COMMANDS.some(c => c.id === id)).length
     : 0;
 
   // Keep active item scrolled into view

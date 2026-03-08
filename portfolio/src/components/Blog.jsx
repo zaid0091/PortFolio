@@ -62,6 +62,48 @@ function BlogModal({ post, onClose }) {
     })
   }
 
+  // Helper function to parse inline formatting (bold and code) robustly
+  const parseInlineFormatting = (text, baseKey) => {
+    const parts = []
+    let current = ''
+    let j = 0
+    
+    while (j < text.length) {
+      // Check for bold
+      if (text.substr(j, 2) === '**') {
+        if (current) parts.push(current)
+        const endIdx = text.indexOf('**', j + 2)
+        if (endIdx !== -1) {
+          parts.push(<strong key={`${baseKey}-s-${parts.length}`}>{text.slice(j + 2, endIdx)}</strong>)
+          j = endIdx + 2
+          current = ''
+        } else {
+          current += text[j]
+          j++
+        }
+      } 
+      // Check for code
+      else if (text[j] === '`') {
+        if (current) parts.push(current)
+        const endIdx = text.indexOf('`', j + 1)
+        if (endIdx !== -1) {
+          parts.push(<code key={`${baseKey}-c-${parts.length}`} className="blog-inline-code">{text.slice(j + 1, endIdx)}</code>)
+          j = endIdx + 1
+          current = ''
+        } else {
+          current += text[j]
+          j++
+        }
+      } 
+      else {
+        current += text[j]
+        j++
+      }
+    }
+    if (current) parts.push(current)
+    return parts
+  }
+
   // Split content into text blocks and code blocks
   const renderFull = (md) => {
     const blocks = []
@@ -84,22 +126,12 @@ function BlogModal({ post, onClose }) {
         blocks.push(<h2 key={i} className="blog-modal-h2">{line.slice(3)}</h2>)
       } else if (line.startsWith('- ') || /^\d+\. /.test(line)) {
         const text = line.replace(/^[-\d]+\.?\s/, '')
-        const parts = text.split(/(\*\*[^*]+\*\*)|(`[^`]+`)/).map((p, j) => {
-          if (!p) return null
-          if (p.startsWith('**') && p.endsWith('**')) return <strong key={j}>{p.slice(2, -2)}</strong>
-          if (p.startsWith('`') && p.endsWith('`')) return <code key={j} className="blog-inline-code">{p.slice(1, -1)}</code>
-          return p
-        })
+        const parts = parseInlineFormatting(text, `li-${i}`)
         blocks.push(<li key={i} className="blog-modal-li">{parts}</li>)
       } else if (line.trim() === '') {
         blocks.push(<div key={i} className="blog-modal-spacer" />)
       } else {
-        const parts = line.split(/(\*\*[^*]+\*\*)|(`[^`]+`)/).map((p, j) => {
-          if (!p) return null
-          if (p.startsWith('**') && p.endsWith('**')) return <strong key={j}>{p.slice(2, -2)}</strong>
-          if (p.startsWith('`') && p.endsWith('`')) return <code key={j} className="blog-inline-code">{p.slice(1, -1)}</code>
-          return p
-        })
+        const parts = parseInlineFormatting(line, `p-${i}`)
         blocks.push(<p key={i} className="blog-modal-p">{parts}</p>)
       }
     })

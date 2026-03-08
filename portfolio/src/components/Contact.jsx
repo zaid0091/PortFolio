@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
 import { useInView } from '../hooks/useInView';
 
@@ -15,10 +15,18 @@ const SOCIAL_CARDS = [
 export default function Contact() {
   const formRef    = useRef(null);
   const botRef     = useRef(null);
+  const timeoutRef = useRef(null);
   const [status, setStatus]     = useState('idle'); // idle | sending | success | error
   const [focused, setFocused]   = useState('');
   const [copied, setCopied]     = useState(false);
   const [charCount, setCharCount] = useState(0);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   function copyEmail() {
     navigator.clipboard.writeText('zaidliaqat999@gmail.com').then(() => {
@@ -44,10 +52,12 @@ export default function Contact() {
         setStatus('success');
         formRef.current.reset();
         setCharCount(0);
-        setTimeout(() => setStatus('idle'), 5000);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => setStatus('idle'), 5000);
     } catch {
       setStatus('error');
-      setTimeout(() => setStatus('idle'), 4000);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setStatus('idle'), 4000);
     }
   }
 

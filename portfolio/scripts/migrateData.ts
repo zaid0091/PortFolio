@@ -4,11 +4,42 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL
 const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Missing Supabase environment variables.")
-    process.exit(1)
+    throw new Error("Missing Supabase environment variables.")
 }
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Validation schema for projects
+function validateProject(p: any): boolean {
+    const required = ['icon', 'icon_bg', 'title', 'date', 'description', 'bullets', 'tags', 'github_url'];
+    for (const field of required) {
+        if (!p[field]) {
+            console.error(`Project missing required field: ${field}`);
+            return false;
+        }
+    }
+    if (!Array.isArray(p.bullets) || !Array.isArray(p.tags)) {
+        console.error(`Project ${p.title}: bullets and tags must be arrays`);
+        return false;
+    }
+    return true;
+}
+
+// Validation schema for blogs
+function validateBlog(b: any): boolean {
+    const required = ['title', 'date', 'tags', 'color', 'summary', 'content'];
+    for (const field of required) {
+        if (!b[field]) {
+            console.error(`Blog missing required field: ${field}`);
+            return false;
+        }
+    }
+    if (!Array.isArray(b.tags)) {
+        console.error(`Blog ${b.title}: tags must be an array`);
+        return false;
+    }
+    return true;
+}
 
 const projects = [
     {
@@ -108,17 +139,40 @@ const blogs = [
 ]
 
 async function migrate() {
-    console.log('Migrating projects...')
+    console.log('Validating and migrating projects...')
+    let projectsInserted = 0
     for (const p of projects) {
+        if (!validateProject(p)) {
+            console.warn(`Skipping invalid project: ${p.title}`)
+            continue
+        }
         const { error } = await supabase.from('projects').insert([p])
-        if (error) console.error('Error inserting project:', error)
+        if (error) {
+            console.error(`Error inserting project "${p.title}":`, error)
+        } else {
+            projectsInserted++
+        }
     }
-    console.log('Migrating blogs...')
+    
+    console.log('Validating and migrating blogs...')
+    let blogsInserted = 0
     for (const b of blogs) {
+        if (!validateBlog(b)) {
+            console.warn(`Skipping invalid blog: ${b.title}`)
+            continue
+        }
         const { error } = await supabase.from('blogs').insert([b])
-        if (error) console.error('Error inserting blog:', error)
+        if (error) {
+            console.error(`Error inserting blog "${b.title}":`, error)
+        } else {
+            blogsInserted++
+        }
     }
-    console.log('Done!')
+    
+    console.log(`Migration complete! Inserted ${projectsInserted} projects and ${blogsInserted} blogs.`)
 }
 
-migrate()
+migrate().catch(err => {
+    console.error('Fatal migration error:', err)
+    process.exit(1)
+})
