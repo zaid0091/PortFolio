@@ -24,6 +24,7 @@ import Login from './components/admin/Login'
 import AdminLayout from './components/admin/AdminLayout'
 import ManageProjects from './components/admin/ManageProjects'
 import ManageBlogs from './components/admin/ManageBlogs'
+import ErrorBoundary from './components/ErrorBoundary'
 function HomePage() {
   return (
     <>
@@ -137,15 +138,17 @@ function App() {
 
       <div id="smooth-root">
         <Navbar theme={theme} toggleTheme={toggleTheme} onCmdOpen={() => setCmdOpen(true)} />
-        <Routes>
-          <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
-          <Route path="/admin/login" element={<Login />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<ManageProjects />} />
-            <Route path="blogs" element={<ManageBlogs />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
+            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<ManageProjects />} />
+              <Route path="blogs" element={<ManageBlogs />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ErrorBoundary>
       </div>
 
       {/* Scroll-to-top button */}

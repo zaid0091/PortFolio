@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../services/supabaseClient';
 import { LogOut, LayoutDashboard, FileText } from 'lucide-react';
+import { ToastProvider } from '../../contexts/ToastContext';
 
 export default function AdminLayout() {
     const [session, setSession] = useState(null);
@@ -71,7 +72,9 @@ export default function AdminLayout() {
 
             {/* Main Content */}
             <div className="flex-1 overflow-y-auto w-full p-4 md:p-6">
-                <Outlet />
+                <ToastProvider>
+                    <Outlet />
+                </ToastProvider>
             </div>
         </div>
     );

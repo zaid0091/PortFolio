@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { useToast } from '../../contexts/ToastContext';
 
 export default function ManageBlogs() {
+    const toast = useToast();
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingBlog, setEditingBlog] = useState(null);
@@ -62,7 +64,7 @@ export default function ManageBlogs() {
     async function confirmDelete() {
         if (!deletingId) return;
         const { error } = await supabase.from('blogs').delete().eq('id', deletingId);
-        if (error) alert('Error deleting blog');
+        if (error) toast.error('Error deleting blog.');
         else fetchBlogs();
         setDeletingId(null);
     }
@@ -84,7 +86,7 @@ export default function ManageBlogs() {
             setShowSaveConfirm(true);
         } catch (err) {
             console.error('Error in handleSubmit (Blogs):', err);
-            alert('Form processing error: ' + (err.message || JSON.stringify(err)));
+            toast.error('Form processing error: ' + (err.message || JSON.stringify(err)));
         }
     }
 
@@ -118,10 +120,10 @@ export default function ManageBlogs() {
             setIsFormOpen(false);
             setShowSaveConfirm(false);
             fetchBlogs();
-            alert('Success! Blog post saved.');
+            toast.success('Blog post saved successfully!');
         } catch (error) {
             console.error('Supabase save error (Blogs):', error);
-            alert('Database Error: ' + (error.message || JSON.stringify(error)));
+            toast.error('Database Error: ' + (error.message || JSON.stringify(error)));
         } finally {
             setSaving(false);
             setPendingSaveData(null);

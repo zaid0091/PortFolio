@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { useToast } from '../../contexts/ToastContext';
 
 const ensureAbsoluteUrl = (url) => {
     if (!url) return url;
@@ -16,6 +17,7 @@ const ensureAbsoluteUrl = (url) => {
 };
 
 export default function ManageProjects() {
+    const toast = useToast();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingProject, setEditingProject] = useState(null);
@@ -88,7 +90,7 @@ export default function ManageProjects() {
     async function confirmDelete() {
         if (!deletingId) return;
         const { error } = await supabase.from('projects').delete().eq('id', deletingId);
-        if (error) alert('Error deleting project');
+        if (error) toast.error('Error deleting project.');
         else fetchProjects();
         setDeletingId(null);
     }
@@ -124,7 +126,7 @@ export default function ManageProjects() {
             setShowSaveConfirm(true);
         } catch (err) {
             console.error('Error in handleSubmit:', err);
-            alert('Form processing error: ' + (err.message || JSON.stringify(err)));
+            toast.error('Form processing error: ' + (err.message || JSON.stringify(err)));
         }
     }
 
@@ -159,10 +161,10 @@ export default function ManageProjects() {
             setIsFormOpen(false);
             setShowSaveConfirm(false);
             fetchProjects();
-            alert('Success! Project saved.');
+            toast.success('Project saved successfully!');
         } catch (error) {
             console.error('Supabase save error:', error);
-            alert('Database Error: ' + (error.message || JSON.stringify(error)));
+            toast.error('Database Error: ' + (error.message || JSON.stringify(error)));
         } finally {
             setSaving(false);
             setPendingSaveData(null);
