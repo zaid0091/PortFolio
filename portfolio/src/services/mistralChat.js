@@ -1,21 +1,21 @@
 /**
- * mistralChat.js — Mistral API integration (domain service, no UI)
+ * mistralChat.js — Secure AI chat service (domain service, no UI)
  *
  * Responsibilities:
  *   - Build a system prompt from the owner's resume data
- *   - Stream a chat completion from Mistral's API
+ *   - Stream a chat completion via the secure /api/chat proxy
  *   - Expose a clean async-generator interface to consumers
  *
- * The component layer is responsible for UI; this layer is
- * responsible for all AI/API concerns.
+ * Security: The Mistral API key lives server-side only (in /api/chat.js).
+ * This client never touches the key — it sends messages to the proxy,
+ * which authenticates with Mistral on our behalf.
  */
 
 import { RESUME } from '../data/resumeData.js';
 
-const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
-
-// Model chosen for balanced speed, quality and cost
-const MODEL = 'mistral-small-latest';
+// In production the proxy is at /api/chat (same origin, Vercel serverless).
+// In development fall back to localhost Vite proxy or direct Vercel dev.
+const CHAT_PROXY_URL = '/api/chat';
 
 // Hard cap on context length to avoid runaway costs / rate limits
 const MAX_HISTORY_MESSAGES = 10;
@@ -76,13 +76,12 @@ ${RESUME.certifications.map(c => `${c.name} — ${c.provider}`).join('\n')}
  * @returns {Array<{role: string, content: string}>}
  */
 function trimHistory(history) {
-    // history here does NOT include the system message
     if (history.length <= MAX_HISTORY_MESSAGES) return history;
     return history.slice(history.length - MAX_HISTORY_MESSAGES);
 }
 
 /**
- * Streams a chat response from Mistral and yields text chunks.
+ * Streams a chat response via the secure /api/chat proxy.
  *
  * @param {Array<{role: 'user'|'assistant', content: string}>} conversationHistory
  *   All prior turns (not including system message).
@@ -91,43 +90,28 @@ function trimHistory(history) {
  * @throws {Error} With a user-facing message on API or network failure.
  */
 export async function* streamChatResponse(conversationHistory, userMessage) {
-    const apiKey = import.meta.env.VITE_MISTRAL_API_KEY;
-
-    if (!apiKey) {
-        throw new Error(
-            'VITE_MISTRAL_API_KEY is not set. Add it to your .env file and restart the dev server.'
-        );
-    }
-
     const messages = [
         { role: 'system', content: buildSystemPrompt() },
         ...trimHistory(conversationHistory),
         { role: 'user', content: userMessage },
     ];
 
-    const response = await fetch(MISTRAL_API_URL, {
+    const response = await fetch(CHAT_PROXY_URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-            model: MODEL,
-            messages,
-            stream: true,
-            max_tokens: 512,
-            temperature: 0.6,
-        }),
-        // Abort if the API hangs for more than 30 seconds (Rule 67)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages }),
         signal: AbortSignal.timeout(30_000),
     });
 
     if (!response.ok) {
-        // Avoid leaking raw API error bodies to the UI (Rule 185)
-        const status = response.status;
-        if (status === 401) throw new Error('Invalid Mistral API key. Please check your .env file.');
-        if (status === 429) throw new Error('Rate limit reached. Please wait a moment and try again.');
-        throw new Error(`Mistral API error (${status}). Please try again.`);
+        let errorMsg = 'Something went wrong. Please try again.';
+        try {
+            const body = await response.json();
+            if (body?.error) errorMsg = body.error;
+        } catch {
+            // non-JSON error body — use default message
+        }
+        throw new Error(errorMsg);
     }
 
     const reader = response.body.getReader();
