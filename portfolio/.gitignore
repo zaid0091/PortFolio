@@ -44,3 +44,5 @@ eslint_output.txt
 blog_eslint.json
 eslint.json
 
+.vercel
+.env*.local

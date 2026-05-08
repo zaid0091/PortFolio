@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 
@@ -11,20 +11,35 @@ import Education from './components/Education'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CursorGlow from './components/CursorGlow'
-import NotFound from './components/NotFound'
-import CommandPalette from './components/CommandPalette'
-import KonamiEgg from './components/KonamiEgg'
 import Blog from './components/Blog'
 // import HireMeBanner from './components/HireMeBanner'
 import SectionTint from './components/SectionTint'
 import SmoothScroll from './components/SmoothScroll'
-import AskMeChat from './components/AskMeChat'
-
-import Login from './components/admin/Login'
-import AdminLayout from './components/admin/AdminLayout'
-import ManageProjects from './components/admin/ManageProjects'
-import ManageBlogs from './components/admin/ManageBlogs'
 import ErrorBoundary from './components/ErrorBoundary'
+
+// Lazy-loaded: admin routes (99% of visitors never visit these)
+const Login = lazy(() => import('./components/admin/Login'))
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
+const ManageProjects = lazy(() => import('./components/admin/ManageProjects'))
+const ManageBlogs = lazy(() => import('./components/admin/ManageBlogs'))
+
+// Lazy-loaded: overlays & widgets (hidden by default, loaded on demand)
+const CommandPalette = lazy(() => import('./components/CommandPalette'))
+const KonamiEgg = lazy(() => import('./components/KonamiEgg'))
+const AskMeChat = lazy(() => import('./components/AskMeChat'))
+const NotFound = lazy(() => import('./components/NotFound'))
+
+// Minimal loading spinner for route-level Suspense fallback
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div
+        className="w-8 h-8 border-[3px] rounded-full animate-spin"
+        style={{ borderColor: 'var(--border)', borderTopColor: '#ffd93d' }}
+      />
+    </div>
+  )
+}
 function HomePage() {
   return (
     <>
@@ -139,15 +154,17 @@ function App() {
       <div id="smooth-root">
         <Navbar theme={theme} toggleTheme={toggleTheme} onCmdOpen={() => setCmdOpen(true)} />
         <ErrorBoundary>
-          <Routes>
-            <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
-            <Route path="/admin/login" element={<Login />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<ManageProjects />} />
-              <Route path="blogs" element={<ManageBlogs />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<><main><HomePage /></main><Footer /></>} />
+              <Route path="/admin/login" element={<Login />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<ManageProjects />} />
+                <Route path="blogs" element={<ManageBlogs />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </ErrorBoundary>
       </div>
 
@@ -160,14 +177,12 @@ function App() {
         ↑
       </button>
 
-      {/* Command Palette */}
-      <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} onToggleTheme={toggleTheme} />
-
-      {/* Konami Code Easter Egg */}
-      <KonamiEgg />
-
-      {/* AI Chat Widget */}
-      <AskMeChat />
+      {/* Lazy-loaded overlays & widgets (fallback=null since hidden by default) */}
+      <Suspense fallback={null}>
+        <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} onToggleTheme={toggleTheme} />
+        <KonamiEgg />
+        <AskMeChat />
+      </Suspense>
     </>
   )
 }
